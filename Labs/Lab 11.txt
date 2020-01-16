@@ -1,0 +1,90 @@
+# include <REGX51.H>
+
+# define LCD_data P3
+# define LCD_rs P2_0
+# define LCD_rw P2_1
+# define LCD_en P2_2
+
+void Ldelay()
+{
+	unsigned int j;
+    for(j=0;j<32800;j++);
+}
+void msdelay()  // Function for creating delay in milliseconds.
+{
+    unsigned int j;
+    for(j=0;j<500;j++);
+}
+void LCD_command(unsigned char var)
+{
+	LCD_data = var; //send command
+	LCD_rs = 0; //Selected command register
+	LCD_rw = 0; //We are writing in instruction register
+	LCD_en = 1;
+	msdelay();
+	LCD_en = 0; //Enable H->L
+}
+void LCD_senddata(unsigned char var)
+{
+	LCD_data = var; //send data
+	LCD_rs = 1; //Selected data register
+	LCD_rw = 0; //We are writing
+	LCD_en = 1;
+	msdelay();
+	LCD_en = 0; //Enable H->L
+}
+void LCD_init()
+{
+	LCD_command(0x38);		//Function set: 2 Line, 5x7 dots
+  LCD_command(0x0F);		//Display on, Curson blinking command
+  LCD_command(0x01);    	//Clear LCD
+  LCD_command(0x06);     	// auto increment cursor shift (cursor to right)
+
+}
+unsigned char WhichNumberPressed()
+{
+	// read the pins from port 0 and return the pressed character
+	P1 = 0xF0;
+asd:
+	P1 = 0xFE;
+	if (P1 == 0x0EE) return '7';
+	if (P1 == 0x0DE) return '8';
+	if (P1 == 0x0BE) return '9';
+	if (P1 == 0x07E) return '/';
+	P1 = 0xFD;
+	if (P1 == 0x0ED) return '4';
+	if (P1 == 0x0DD) return '5';
+	if (P1 == 0x0BD) return '6';
+	if (P1 == 0x07D) return '*';
+	P1 = 0xFB;
+	if (P1 == 0x0EB) return '1';
+	if (P1 == 0x0DB) return '2';
+	if (P1 == 0x0BB) return '3';
+	if (P1 == 0x07B) return '-';
+	P1 = 0xF7;
+	if (P1 == 0x0E7) return ' ';
+	if (P1 == 0x0D7) return '0';
+	if (P1 == 0x0B7) return '=';
+	if (P1 == 0x077) return '+';
+	
+	if (P1 == 0x0F7) goto asd;
+}
+unsigned char pressed;
+void main()
+{
+again:
+	
+	LCD_init();
+	P0 = 0x00;
+	while(1)
+	{
+		pressed = WhichNumberPressed();
+		Ldelay();
+		if (pressed == ' ')
+			goto again;
+		else
+		{
+			LCD_senddata(pressed);
+		}
+	}
+}

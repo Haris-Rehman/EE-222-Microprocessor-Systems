@@ -1,0 +1,104 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+
+\title{Lab 01: Programming in Assembly Language using MASM \\ \large EE-222: Microprocessor System}
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+\begin{abstract}
+Microprocessor architecture is the actually the interface in between software and hardware. A microprocessor system consists of \emph{Microarchitecture and ISA}, latter begin software while prior the hardware layer. \\
+Since ISA is a part of microarcitectury, it is surely hardware-dependent as well. Each microarchitecture has its own ISA defined with its own pros and cons, as per trade-offs decided by the architect. \\
+Here we explore the all-famous \emph{x86 ISA} which is the intruction set of \emph{80x86 series}, the core of this course.
+\newpage
+\end{abstract}
+\section{MASM}
+The Microsoft Macro Assembler (MASM) is an x86 assembler for Microsoft Windows that uses the Intel syntax. Assembly language is a great tool to understand how a computer works and with the help of MASM you will be able to assemble and run your programs written in Assembly language.
+\section{Assembly Language}
+\subsection{Addition Code}
+\begin{verbatim}
+TITLE Add two registers (example.asm)
+; The comments are given after the semi colon on a line
+; This program adds 32-bit unsigned
+; integers and stores the sum in the ecx register
+Include irvine32.inc
+.data
+;variable declarations go here
+.code
+Main Proc
+;instructions go here
+Mov 	eax, 30		;Assembly Language is NOT case sensitive
+Mov 	ebx, 20
+Add 	edx, eax
+Add 	edx, ebx
+Call 	dumpregs	;displays the result on the screen by displaying all register values
+Exit
+Main endp
+End main
+\end{verbatim}
+\subsection{Execution}
+\includegraphics[scale=1]{out}
+\newpage
+\section{Debugging}
+\subsection{Analysis}
+\begin{center}
+\begin{tabular}{c c c}
+	Resister & Content & Decimal\\
+	EAX & 0000001E & 30 \\
+	EBX & 00000014 & 20 \\
+	EDX & 00401037 & 4198455
+\end{tabular}
+\end{center}
+\subsection{Verification}
+\begin{itemize}
+\item MOV
+	\begin{itemize}
+	\item EAX stores 30
+	\item EBX stored 20
+	\end{itemize}
+\item ADD
+	\begin{itemize}
+	\item The add command stores a garbage value in registem EDX
+	\end{itemize}
+\end{itemize}
+\paragraph{Reason}
+The possible reason for this error is \emph{already existing garbage value} in registex EDX
+\paragraph{Solution}
+This poblem can be resolved by \emph{storing zero} in register EDX before addition. Thus garbage value will be cleared.
+\subsection{Modified Code}
+\begin{verbatim}
+TITLE Add two registers (example.asm)
+; The comments are given after the semi colon on a line
+; This program adds 32-bit unsigned
+; integers and stores the sum in the ecx register
+Include irvine32.inc
+.data
+;variable declarations go here
+.code
+Main Proc
+;instructions go here
+Mov		edx, 0		;erasing the garbage value
+Mov 	eax, 30	
+Mov 	ebx, 20
+Add 	edx, eax
+Add 	edx, ebx
+Call 	dumpregs	
+Exit
+Main endp
+End main
+\end{verbatim}
+\subsection{Debugged Execution}
+\includegraphics[scale=1]{out2}
+\subsection{Analysis}
+\begin{center}
+\begin{tabular}{c c c}
+	Resister & Content & Decimal\\
+	EAX & 0000001E & 30 \\
+	EBX & 00000014 & 20 \\
+	EDX & 00000032 & 50
+\end{tabular}
+\end{center}
+\section{Summary}
+The basic code in x86 version of assembly language has been debugged using hit-and-trial, and deductive method using DOS command-line assembler MASM.
+\end{document}
